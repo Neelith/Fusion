@@ -16,24 +16,12 @@ public class FilesMergerManager : IFilesMergerManager
     {
         if (string.IsNullOrWhiteSpace(inputFilesFolderPath) || !Directory.Exists(inputFilesFolderPath))
             throw new ArgumentException($"'{nameof(inputFilesFolderPath)}' cannot be null or empty and directory must exist.", nameof(inputFilesFolderPath));
-        
-        string[] filePaths = Directory.GetFiles(inputFilesFolderPath);
-        var bag = new ConcurrentBag<FileRecord>();
-        await Parallel.ForEachAsync(filePaths, async (filePath, cancellationToken)  => {
-            string text = await File.ReadAllTextAsync(filePath);
-            bag.Add(new FileRecord(filePath, text));
-            Console.WriteLine($"Processed: {filePath}.");
-        });
 
+        string[] filePaths = Directory.GetFiles(inputFilesFolderPath);
+        ConcurrentBag<FileRecord> bag = await ReadFilesAsync(filePaths);
         Console.WriteLine($"Processed {bag.Count()} files from {inputFilesFolderPath}.");
 
-        var records = bag.OrderBy(record => record.Path);
-        string outputFileText = records
-            .Select(record => record.Text)
-            .Aggregate((prev, actual) => 
-            { 
-                return $"{prev}{Environment.NewLine}{actual}"; 
-            });
+        string outputFileText = MergeTextFromFiles(bag);
 
         if (!string.IsNullOrWhiteSpace(outputFilePath) && !Directory.Exists(outputFilePath))
         {
@@ -47,6 +35,30 @@ public class FilesMergerManager : IFilesMergerManager
 
         await File.WriteAllTextAsync(outputFilePathName, outputFileText);
         Console.WriteLine($"Output file is {outputFilePathName}.");
+    }
+
+    private async Task<ConcurrentBag<FileRecord>> ReadFilesAsync(string[] filePaths)
+    {
+        var bag = new ConcurrentBag<FileRecord>();
+        await Parallel.ForEachAsync(filePaths, async (filePath, cancellationToken) =>
+        {
+            string text = await File.ReadAllTextAsync(filePath);
+            bag.Add(new FileRecord(filePath, text));
+            Console.WriteLine($"Processed: {filePath}.");
+        });
+
+        return bag;
+    }
+
+    private string MergeTextFromFiles(ConcurrentBag<FileRecord> bag)
+    {
+        return bag
+            .OrderBy(record => record.Path)
+            .Select(record => record.Text)
+            .Aggregate((prev, actual) =>
+            {
+                return $"{prev}{Environment.NewLine}{actual}";
+            });
     }
 
     public async Task RunAsync(string[] args)

@@ -1,9 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Entities.Entities;
+﻿namespace Entities.Entities;
 
 public record class FileRecord(string Path, string Text);

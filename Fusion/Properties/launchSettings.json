@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Fusion": {
-      "commandName": "Project",
-      "commandLineArgs": "m C:\\Users\\aless\\Desktop\\FusionInput C:\\Users\\aless\\Desktop\\FusionOutput\\out.txt"
+      "commandName": "Project"
     },
     "Docker": {
       "commandName": "Docker"

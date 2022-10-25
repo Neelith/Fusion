@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Services.Managers;
 
-public class FilesMergerManager : IFilesMergerManager, IStepRunner
+public class FilesMergerManager : IFilesMergerManager
 {
     public async Task MergeFiles(string inputFilesFolderPath, string? outputFilePath = null)
     {
@@ -49,30 +49,24 @@ public class FilesMergerManager : IFilesMergerManager, IStepRunner
         Console.WriteLine($"Output file is {outputFilePathName}.");
     }
 
-    public async Task RunAsync(IDictionary<string, string> stepArgs)
+    public async Task RunAsync(string[] args)
     {
-        if (stepArgs is null || stepArgs.Count == 0) throw new ArgumentNullException(nameof(stepArgs));
+        string inputFilesFolderPath = args.Length < 2 || string.IsNullOrWhiteSpace(args[1])
+            ? throw new ArgumentException("Input folder", "merge command requires at least an input folder param.")
+            : args[1];
 
-        bool isInputFilesFolderPathValid = stepArgs.TryGetValue("inputFilesFolderPath", out string? inputFilesFolderPath);
-        if (!isInputFilesFolderPathValid)
-        {
-            throw new ArgumentException($"{nameof(inputFilesFolderPath)} it's not valid.", nameof(inputFilesFolderPath));
-        }
+        string? outputFilePath = args.Length < 3 || string.IsNullOrWhiteSpace(args[2])
+            ? string.Empty
+            : args[2];
 
-        bool isOutputFilePathValid = stepArgs.TryGetValue("outputFilePath", out string? outputFilePath);
+        bool isOutputFilePathValid = !string.IsNullOrWhiteSpace(outputFilePath);
 
-        if(isInputFilesFolderPathValid && isOutputFilePathValid)
+        if (isOutputFilePathValid)
         {
             await MergeFiles(inputFilesFolderPath, outputFilePath);
             return;
         }
 
-        if (isInputFilesFolderPathValid)
-        {
-            await MergeFiles(inputFilesFolderPath: inputFilesFolderPath);
-            return;
-        }
-
-        throw new ApplicationException($"{nameof(FilesMergerManager)} - Application was not able to run ${MergeFiles}");
+        await MergeFiles(inputFilesFolderPath);
     }
 }

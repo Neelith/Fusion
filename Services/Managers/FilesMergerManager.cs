@@ -1,4 +1,5 @@
 ﻿using Entities.Entities;
+using Microsoft.Extensions.Configuration;
 using Services.Interfaces;
 using System.Collections.Concurrent;
 
@@ -6,6 +7,13 @@ namespace Services.Managers;
 
 public class FilesMergerManager : IFilesMergerManager
 {
+    private readonly IConfiguration configuration;
+
+    public FilesMergerManager(IConfiguration configuration)
+    {
+        this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+    }
+
     public async Task MergeFiles(string inputFilesFolderPath, string? outputFilePath = null)
     {
         if (string.IsNullOrWhiteSpace(inputFilesFolderPath) || !Directory.Exists(inputFilesFolderPath))
@@ -15,7 +23,8 @@ public class FilesMergerManager : IFilesMergerManager
         ConcurrentBag<FileRecord> bag = await ReadFilesAsync(filePaths);
         Console.WriteLine($"Processed {bag.Count()} files from {inputFilesFolderPath}.");
 
-        string outputFileText = MergeTextFromFiles(bag);
+        string mergeFilesOrder = configuration["MergeFilesOrder"];
+        string outputFileText = MergeTextFromFiles(bag, mergeFilesOrder);
 
         if (string.IsNullOrWhiteSpace(outputFilePath))
         {
@@ -45,15 +54,33 @@ public class FilesMergerManager : IFilesMergerManager
         return bag;
     }
 
-    private string MergeTextFromFiles(ConcurrentBag<FileRecord> bag)
+    private string MergeTextFromFiles(ConcurrentBag<FileRecord> bag, string mergeFilesOrder)
     {
+        if (string.IsNullOrWhiteSpace(mergeFilesOrder))
+        {
+            mergeFilesOrder = "ByName";
+        }
+
+        Func<FileRecord,string> orderFunction = GetOrderFunction(mergeFilesOrder);
+
         return bag
-            .OrderBy(record => record.Path)
+            .OrderBy(orderFunction)
             .Select(record => record.Text)
             .Aggregate((prev, actual) =>
             {
                 return $"{prev}{Environment.NewLine}{actual}";
             });
+    }
+
+    private Func<FileRecord, string> GetOrderFunction(string mergeFilesOrder)
+    {
+        switch (mergeFilesOrder)
+        {
+            case "ByName":
+                return fileRecord => fileRecord.Path;
+            default:
+                throw new ArgumentException("Order type not recognized.", nameof(mergeFilesOrder));
+        }
     }
 
     public async Task RunAsync(string[] args)

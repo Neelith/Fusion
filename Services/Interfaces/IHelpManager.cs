@@ -1,6 +1,6 @@
 ﻿namespace Services.Interfaces
 {
-    public interface IHelpManager : IStepRunner
+    public interface IHelpManager : IStep
     {
         Task PrintHelpScreen(string text);
     }

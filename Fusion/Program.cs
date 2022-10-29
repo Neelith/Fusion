@@ -25,7 +25,7 @@ internal class Program
                     })
                     .ConfigureServices(builder => {
                         builder
-                        .AddTransient<IStepRunnerStrategy, StepRunnerStrategy>()
+                        .AddTransient<IStepStrategy, StepStrategy>()
                         .AddTransient<IFilesMergerManager, FilesMergerManager>()
                         .AddTransient<IHelpManager, HelpManager>();
                     })
@@ -48,11 +48,11 @@ internal class Program
             Console.WriteLine($"Fusion version {appVersion} is running...");
 
             string command = args.Length == 0 || string.IsNullOrWhiteSpace(args[0])
-                ? "default"
+                ? "-h"
                 : args[0];
-            IStepRunnerStrategy stepRunnerStrategy = host.Services.GetRequiredService<IStepRunnerStrategy>();
-            IStepRunner stepRunner = stepRunnerStrategy.GetStepRunner(command);
-            await stepRunner.RunAsync(args);
+            IStepStrategy stepStrategy = host.Services.GetRequiredService<IStepStrategy>();
+            IStep step = stepStrategy.GetStep(command);
+            await step.RunAsync(args);
 
             stopwatch.Stop();
             Console.WriteLine($"\nDone.\nTime elapsed: {stopwatch.Elapsed}");

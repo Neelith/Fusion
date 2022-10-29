@@ -1,12 +1,6 @@
 ﻿using Entities.Entities;
 using Services.Interfaces;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Managers;
 
@@ -23,18 +17,19 @@ public class FilesMergerManager : IFilesMergerManager
 
         string outputFileText = MergeTextFromFiles(bag);
 
-        if (!string.IsNullOrWhiteSpace(outputFilePath) && !Directory.Exists(outputFilePath))
+        if (string.IsNullOrWhiteSpace(outputFilePath))
+        {
+            outputFilePath = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}fusionOutput.txt";
+        }
+
+        if (!Directory.Exists(outputFilePath))
         {
             string outputFolderPath = Path.GetDirectoryName(outputFilePath);
             Directory.CreateDirectory(outputFolderPath);
         }
 
-        string outputFilePathName = !string.IsNullOrWhiteSpace(outputFilePath)
-            ? $"{outputFilePath}"
-            : $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}fusionOutput.txt";
-
-        await File.WriteAllTextAsync(outputFilePathName, outputFileText);
-        Console.WriteLine($"Output file is {outputFilePathName}.");
+        await File.WriteAllTextAsync(outputFilePath, outputFileText);
+        Console.WriteLine($"Output file is {outputFilePath}.");
     }
 
     private async Task<ConcurrentBag<FileRecord>> ReadFilesAsync(string[] filePaths)

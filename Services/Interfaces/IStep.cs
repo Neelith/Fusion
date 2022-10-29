@@ -1,6 +1,6 @@
 ﻿namespace Services.Interfaces
 {
-    public interface IStepRunner
+    public interface IStep
     {
         Task RunAsync(string[] args);
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Services.Interfaces
 {
-    public interface IFilesMergerManager : IStepRunner
+    public interface IFilesMergerManager : IStep
     {
         Task MergeFiles(string inputFilesFolderPath, string? outputFilePath = null);
     }

@@ -45,10 +45,9 @@ public class FilesMergerManager : IFilesMergerManager
         var bag = new ConcurrentBag<FileRecord>();
         await Parallel.ForEachAsync(filePaths, async (filePath, cancellationToken) =>
         {
-            FileInfo fileInfo = new FileInfo(filePath);
-            using StreamReader streamReader = fileInfo.OpenText();
-            string text = await streamReader.ReadToEndAsync();
-            bag.Add(new FileRecord(fileInfo, text));
+            var file = new FileRecord(filePath);
+            await file.ReadAsync();
+            bag.Add(file);
             Console.WriteLine($"Processed: {filePath}.");
         });
 

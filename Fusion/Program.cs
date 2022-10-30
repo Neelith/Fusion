@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Services.Managers.FilesMergerManager;
 using Services.Managers.HelpManager;
+using Services.Managers.HouseKeepingManager;
 using Services.Services.StepStrategy;
 using System.Diagnostics;
 
@@ -28,7 +29,8 @@ internal class Program
                         builder
                         .AddTransient<IStepStrategy, StepStrategy>()
                         .AddTransient<IFilesMergerManager, FilesMergerManager>()
-                        .AddTransient<IHelpManager, HelpManager>();
+                        .AddTransient<IHelpManager, HelpManager>()
+                        .AddTransient<IHouseKeepingManager, HouseKeepingManager>();
                     })
                     .Build();
         return host;

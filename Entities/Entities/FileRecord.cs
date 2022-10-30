@@ -1,3 +1,3 @@
 ﻿namespace Entities.Entities;
 
-public record class FileRecord(string Path, string Text);
+public record class FileRecord(FileInfo FileInfo, string Text);

@@ -45,8 +45,10 @@ public class FilesMergerManager : IFilesMergerManager
         var bag = new ConcurrentBag<FileRecord>();
         await Parallel.ForEachAsync(filePaths, async (filePath, cancellationToken) =>
         {
-            string text = await File.ReadAllTextAsync(filePath);
-            bag.Add(new FileRecord(filePath, text));
+            FileInfo fileInfo = new FileInfo(filePath);
+            using StreamReader streamReader = fileInfo.OpenText();
+            string text = await streamReader.ReadToEndAsync();
+            bag.Add(new FileRecord(fileInfo, text));
             Console.WriteLine($"Processed: {filePath}.");
         });
 
@@ -76,7 +78,7 @@ public class FilesMergerManager : IFilesMergerManager
         switch (mergeFilesOrder)
         {
             case "ByName":
-                return fileRecord => fileRecord.Path;
+                return fileRecord => fileRecord.FileInfo.FullName;
             default:
                 throw new ArgumentException("Order type not recognized.", nameof(mergeFilesOrder));
         }

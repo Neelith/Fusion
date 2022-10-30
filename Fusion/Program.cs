@@ -38,10 +38,10 @@ internal class Program
     {
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
+        IHost host = Setup(args);
 
         try
         {
-            IHost host = Setup(args);
             await host.StartAsync();
 
             IConfiguration config = host.Services.GetRequiredService<IConfiguration>();
@@ -62,6 +62,10 @@ internal class Program
         {
             stopwatch.Stop();
             Console.WriteLine($"\nFailed.\nTime elapsed: {stopwatch.Elapsed}.\nException message: {ex.Message}");
+        }
+        finally
+        {
+            await host.StopAsync();
         }
     }
 }

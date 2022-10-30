@@ -1,4 +1,6 @@
-﻿namespace Services.Interfaces
+﻿using Entities.Interfaces;
+
+namespace Services.Services.StepStrategy
 {
     public interface IStepStrategy
     {

@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Entities.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Services.Interfaces;
-using Services.Managers;
-using Services.Services;
+using Services.Managers.FilesMergerManager;
+using Services.Managers.HelpManager;
+using Services.Services.StepStrategy;
 using System.Diagnostics;
 
 namespace Fusion;

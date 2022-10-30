@@ -1,9 +1,8 @@
 ﻿using Entities.Entities;
 using Microsoft.Extensions.Configuration;
-using Services.Interfaces;
 using System.Collections.Concurrent;
 
-namespace Services.Managers;
+namespace Services.Managers.FilesMergerManager;
 
 public class FilesMergerManager : IFilesMergerManager
 {
@@ -61,7 +60,7 @@ public class FilesMergerManager : IFilesMergerManager
             mergeFilesOrder = "ByName";
         }
 
-        Func<FileRecord,string> orderFunction = GetOrderFunction(mergeFilesOrder);
+        Func<FileRecord, string> orderFunction = GetOrderFunction(mergeFilesOrder);
 
         return bag
             .OrderBy(orderFunction)

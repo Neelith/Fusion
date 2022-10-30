@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Entities.Interfaces;
 
-namespace Services.Interfaces
+namespace Services.Managers.FilesMergerManager
 {
     public interface IFilesMergerManager : IStep
     {

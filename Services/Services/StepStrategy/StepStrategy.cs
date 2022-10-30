@@ -1,6 +1,8 @@
-﻿using Services.Interfaces;
+﻿using Entities.Interfaces;
+using Services.Managers.FilesMergerManager;
+using Services.Managers.HelpManager;
 
-namespace Services.Services
+namespace Services.Services.StepStrategy
 {
     public class StepStrategy : IStepStrategy
     {

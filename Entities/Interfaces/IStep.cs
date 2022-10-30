@@ -1,4 +1,4 @@
-﻿namespace Services.Interfaces
+﻿namespace Entities.Interfaces
 {
     public interface IStep
     {

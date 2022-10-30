@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Services.Interfaces;
 
-namespace Services.Managers
+namespace Services.Managers.HelpManager
 {
     public class HelpManager : IHelpManager
     {

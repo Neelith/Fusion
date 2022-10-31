@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Services.Managers.FilesMergerManager;
 using Services.Managers.HelpManager;
 using Services.Managers.HouseKeepingManager;
+using Services.Managers.SchedulesManager;
 using Services.Services.StepStrategy;
 using System.Diagnostics;
 
@@ -18,19 +19,17 @@ internal class Program
                     .ConfigureAppConfiguration((hostingContext, configuration) =>
                     {
                         configuration.Sources.Clear();
-
-                        //IHostEnvironment env = hostingContext.HostingEnvironment;
-
                         configuration
-                            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                        //.AddJsonFile($"appsettings.{env.EnvironmentName}.json", false, true);
+                            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                            .AddJsonFile("schedules.json", optional: true, reloadOnChange: true);
                     })
                     .ConfigureServices(builder => {
                         builder
                         .AddTransient<IStepStrategy, StepStrategy>()
                         .AddTransient<IFilesMergerManager, FilesMergerManager>()
                         .AddTransient<IHelpManager, HelpManager>()
-                        .AddTransient<IHouseKeepingManager, HouseKeepingManager>();
+                        .AddTransient<IHouseKeepingManager, HouseKeepingManager>()
+                        .AddTransient<ISchedulesManager, SchedulesManager>();
                     })
                     .Build();
         return host;
@@ -53,10 +52,18 @@ internal class Program
             string command = args.Length == 0 || string.IsNullOrWhiteSpace(args[0])
                 ? "-h"
                 : args[0];
-            IStepStrategy stepStrategy = host.Services.GetRequiredService<IStepStrategy>();
-            IStep step = stepStrategy.GetStep(command);
-            await step.RunAsync(args);
-
+            if (command == "-s" || command == "-schedules")
+            {
+                var schedulesManager = host.Services.GetRequiredService<ISchedulesManager>();
+                await schedulesManager.RunAsync(args);
+            }
+            else
+            {
+                IStepStrategy stepStrategy = host.Services.GetRequiredService<IStepStrategy>();
+                IStep step = stepStrategy.GetStep(command);
+                await step.RunAsync(args);
+            }
+            
             stopwatch.Stop();
             Console.WriteLine($"\nDone.\nTime elapsed: {stopwatch.Elapsed}");
         }

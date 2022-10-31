@@ -34,7 +34,7 @@ namespace Services.Managers.HouseKeepingManager
                     return;
                 }
 
-                DateTime lastTimeUsed = GetFileLastTimeUsed(file, fileDateTimeCancellationCriteria);
+                DateTime lastTimeUsed = GetLastTimeUsed(file, fileDateTimeCancellationCriteria);
                 double daysSinceLastTimeUsed = DateTime.UtcNow.Subtract(lastTimeUsed).TotalDays;
                 if (daysSinceLastTimeUsed >= retentionDays)
                 {
@@ -44,7 +44,7 @@ namespace Services.Managers.HouseKeepingManager
             });
         }
 
-        private DateTime GetFileLastTimeUsed(FileRecord file, string fileDateTimeCancellationCriteria)
+        private DateTime GetLastTimeUsed(FileRecord file, string fileDateTimeCancellationCriteria)
         {
             switch (fileDateTimeCancellationCriteria)
             {

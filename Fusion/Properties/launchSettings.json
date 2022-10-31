@@ -2,7 +2,7 @@
   "profiles": {
     "Fusion": {
       "commandName": "Project",
-      "commandLineArgs": "-d \"C:\\Users\\aless\\Desktop\\Yooolo - Copia\" 30"
+      "commandLineArgs": "-s"
     },
     "Docker": {
       "commandName": "Docker"

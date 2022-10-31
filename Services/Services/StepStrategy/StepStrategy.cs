@@ -12,8 +12,8 @@ namespace Services.Services.StepStrategy
         private readonly IHouseKeepingManager houseKeepingManager;
 
         public StepStrategy(
-            IFilesMergerManager filesMergerManager, 
-            IHelpManager helpManager, 
+            IFilesMergerManager filesMergerManager,
+            IHelpManager helpManager,
             IHouseKeepingManager houseKeepingManager)
         {
             this.filesMergerManager = filesMergerManager ?? throw new ArgumentNullException(nameof(filesMergerManager));

@@ -1,15 +1,18 @@
 ﻿using Entities.Entities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Services.Managers.HouseKeepingManager
 {
     public class HouseKeepingManager : IHouseKeepingManager
     {
         private readonly IConfiguration configuration;
+        private readonly ILogger<HouseKeepingManager> logger;
 
-        public HouseKeepingManager(IConfiguration configuration)
+        public HouseKeepingManager(IConfiguration configuration, ILogger<HouseKeepingManager> logger)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void DeleteAll(string inputFilesFolderPath, uint? retentionDays = null)
@@ -30,7 +33,7 @@ namespace Services.Managers.HouseKeepingManager
                 if (!retentionDays.HasValue)
                 {
                     file.Delete();
-                    Console.WriteLine($"Deleted: {filePath}.");
+                    logger.LogInformation($"Deleted: {filePath}.");
                     return;
                 }
 
@@ -39,7 +42,7 @@ namespace Services.Managers.HouseKeepingManager
                 if (daysSinceLastTimeUsed >= retentionDays)
                 {
                     file.Delete();
-                    Console.WriteLine($"Deleted: {filePath}.");
+                    logger.LogInformation($"Deleted: {filePath}.");
                 }
             });
         }

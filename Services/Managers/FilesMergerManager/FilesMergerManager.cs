@@ -1,16 +1,19 @@
 ﻿using Entities.Entities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
 namespace Services.Managers.FilesMergerManager;
 
 public class FilesMergerManager : IFilesMergerManager
 {
+    private readonly ILogger<FilesMergerManager> logger;
     private readonly IConfiguration configuration;
 
-    public FilesMergerManager(IConfiguration configuration)
+    public FilesMergerManager(IConfiguration configuration, ILogger<FilesMergerManager> logger)
     {
         this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task MergeFiles(string inputFilesFolderPath, string? outputFilePath = null)
@@ -20,7 +23,7 @@ public class FilesMergerManager : IFilesMergerManager
 
         string[] filePaths = Directory.GetFiles(inputFilesFolderPath);
         ConcurrentBag<FileRecord> bag = await ReadFilesAsync(filePaths);
-        Console.WriteLine($"Processed {bag.Count()} files from {inputFilesFolderPath}.");
+        logger.LogInformation($"Processed {bag.Count()} files from {inputFilesFolderPath}.");
 
         string mergeFilesOrder = configuration["MergeFilesOrder"];
         string outputFileText = MergeTextFromFiles(bag, mergeFilesOrder);
@@ -37,7 +40,7 @@ public class FilesMergerManager : IFilesMergerManager
         }
 
         await File.WriteAllTextAsync(outputFilePath, outputFileText);
-        Console.WriteLine($"Output file is {outputFilePath}.");
+        logger.LogInformation($"Output file is {outputFilePath}.");
     }
 
     private async Task<ConcurrentBag<FileRecord>> ReadFilesAsync(string[] filePaths)
@@ -48,7 +51,7 @@ public class FilesMergerManager : IFilesMergerManager
             var file = new FileRecord(filePath);
             await file.ReadAsync();
             bag.Add(file);
-            Console.WriteLine($"Processed: {filePath}.");
+            logger.LogInformation($"Processed: {filePath}.");
         });
 
         return bag;

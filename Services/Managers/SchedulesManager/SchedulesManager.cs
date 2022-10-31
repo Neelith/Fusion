@@ -1,11 +1,7 @@
 ﻿using Entities.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Services.Services.StepStrategy;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Managers.SchedulesManager
 {
@@ -13,11 +9,16 @@ namespace Services.Managers.SchedulesManager
     {
         private readonly IConfiguration configuration;
         private readonly IStepStrategy stepStrategy;
+        private readonly ILogger<SchedulesManager> logger;
 
-        public SchedulesManager(IConfiguration configuration, IStepStrategy stepStrategy)
+        public SchedulesManager(
+            IConfiguration configuration, 
+            IStepStrategy stepStrategy, 
+            ILogger<SchedulesManager> logger)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.stepStrategy = stepStrategy ?? throw new ArgumentNullException(nameof(stepStrategy));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task RunSchedules()
@@ -25,20 +26,20 @@ namespace Services.Managers.SchedulesManager
             var section = configuration.GetSection("Schedules");
             if (!section.Exists())
             {
-                Console.WriteLine("Section Schedules do not exist.");
+                logger.LogInformation("Section Schedules do not exist.");
                 return;
             }
 
             IEnumerable<string>? schedules = section.Get<IEnumerable<string>>();
             if (schedules is null || !schedules.Any())
             {
-                Console.WriteLine("I did not find any schedule to run.");
+                logger.LogInformation("I did not find any schedule to run.");
                 return;
             }
 
             foreach (string schedule in schedules)
             {
-                Console.WriteLine($"Running the following schedule: {schedule}");
+                logger.LogInformation($"Running the following schedule: {schedule}");
 
                 string[] args = schedule.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 

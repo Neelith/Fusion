@@ -20,7 +20,7 @@ internal class Program
         Log.Logger = new LoggerConfiguration()
                             .MinimumLevel.Debug()
                             .WriteTo.Console()
-                            .WriteTo.File(@$"logs{Path.DirectorySeparatorChar}log.txt")
+                            .WriteTo.File(@$"logs{Path.DirectorySeparatorChar}log-.txt", rollingInterval: RollingInterval.Minute)
                             .CreateBootstrapLogger();
 
         IHost host = Host.CreateDefaultBuilder(args)

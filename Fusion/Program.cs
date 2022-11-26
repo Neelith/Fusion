@@ -61,6 +61,7 @@ internal class Program
             string command = args.Length == 0 || string.IsNullOrWhiteSpace(args[0])
                 ? "-h"
                 : args[0];
+
             if (command == "-s" || command == "-schedules")
             {
                 var schedulesManager = host.Services.GetRequiredService<ISchedulesManager>();
@@ -79,7 +80,7 @@ internal class Program
         catch (Exception ex)
         {
             stopwatch.Stop();
-            logger.LogInformation($"Failed.\nTime elapsed: {stopwatch.Elapsed}.\nException message: {ex.Message}");
+            logger.LogError($"Failed.\nTime elapsed: {stopwatch.Elapsed}.\nException message: {ex.Message}");
         }
         finally
         {

@@ -6,3 +6,5 @@ This console app is designed to help with file management and system cleaning. V
 - Schedule previous commands so that only one command is launched.
 
 Run 'Fusion.exe -h' in your cli for more details.
+
+Enjoy!
